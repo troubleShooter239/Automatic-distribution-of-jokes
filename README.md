@@ -1,6 +1,6 @@
 # Automatic-distribution-of-jokes
 
-Automatic distribution of jokes is a Python script, which makes scrabling of the https://anekdoty.ru/ and finds jokes on page.
+Automatic distribution of jokes is a Python script, which makes scrabling of the (https://anekdoty.ru/), finds jokes on page and than you can send it to someone in Telegram.
 
 ## Installation
 
