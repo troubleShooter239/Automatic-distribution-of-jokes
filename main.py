@@ -1,62 +1,85 @@
 # -*- coding: utf-8 -*-
 
-from telethon import TelegramClient
-from bs4 import BeautifulSoup
-from random import choice
-from requests import get
-import traceback, sys
+try:  # Обрабатываем сообщения об ошибке
+    # Подключаем модули, которые понадобятся нам в скрипте
+    from telethon import TelegramClient as tg
+    from bs4 import BeautifulSoup as bs
+    from requests import get
+    from traceback import print_exc
+    from sys import stdout
+    from random import choice
 
 
-try:  # обрабатываем сообщения об ошибке
-        def get_recipient():
-            """Функция ввода имени пользователя получателя"""
-            recipient = ''
-            while recipient == '':
-                recipient = input('Введите username (пример: @VovkaPutin228): ')
-
-            return recipient
-
-
-        def scrab():
-            """Функция скрабинга страницы сайта"""
-            page = ''
-            for i in range(1, 5):  # берем информацию со всех страниц
-                page += get('https://anekdoty.ru/pro-hoholov/page/' + str(i) + '/').text
-
-            page = BeautifulSoup(page, 'lxml')  # делаем скрабинг страницы при помощи lxml
-            page = page.find_all('p')  # находим на странице анеки
-
-            return choice(page).text  # возвращаем рандомный анек
+    def parsing():
+        """Функция парсинга страницы сайта"""
+        jokes = []  # Объявляем список для сбора анекдотов со всех страниц
+        for i in range(1, 5):  # Берем информацию со всех страниц
+            page = get('https://anekdoty.ru/pro-hoholov/page/' + str(i) + '/')  # Собираем html-код со страницы
+            page = bs(page.text, 'lxml')  # Делаем парсинг страницы при помощи lxml
+            page = page.find_all('p')  # Находим на странице анекдоты (они помечены тегом <p>)
+            jokes += [i.text for i in page]  # Собираем все анекдоты в один список
+        return jokes  # Возвращаем все анекдоты
 
 
-        def message(api_id, api_hash, recipient):
-            """Функция отправки сообщений"""
-            while True:  # бесконечный цикл
-                input('Нажмите клавишу ввода для отправки анекдота.')  # ждем нажатия клавиши
-                with TelegramClient('AutoanecXD', api_id, api_hash) as client:  # отправляем сообщение пользователю
-                    client.loop.run_until_complete(client.send_message(recipient, scrab()))
+    def get_recipient():
+        """Функция ввода имени пользователя получателя"""
+        recipient = ''
+        while recipient == '':  # Пока не исчезнет пустота...
+            recipient = input('Введите username (пример: @VovkaPutin228): ')  # Выводим...
+        return recipient  # Возвращаем имя получателя
+
+
+    def amount_of_jokes():
+        """Функция ввода кол-ва отправляемых анеков"""
+        print('Введите кол-во анеков, которых отправим (0 для отправки по нажатии Enter): ')
+        while True:
+            try:  # Проверка, вводит ли пользователь число
+                amount = int(input())
+                break
+            except ValueError:
+                print('Вы ввели не число. Попробуйте снова: ')
+        return amount  # Возвращаем кол-во анекдотов
+
+
+    def message(api_id, api_hash, recipient, jokes):
+        """Функция отправки сообщений"""
+        amount = amount_of_jokes()
+        if amount == 0:  # Если ввели кол-во анекдотов равное 0
+            # Данный блок работает, пока не завершим работу скрипта в целом
+            while True:  # Бесконечный цикл...
+                input('Нажмите клавишу ввода для отправки анекдота.\n')  # Ждем нажатия клавиши...
+                with tg('AutoanecXD', api_id, api_hash) as client:  # Отправляем сообщение пользователю...
+                    client.loop.run_until_complete(client.send_message(recipient, choice(jokes)))
                 print('Анек отправлен XD')
 
-
-        def main():
-            """Главная функция программы"""
-            api_id = 000000  # тг api id
-            api_hash = 'aflalfdlasfldasfl204120lasdFLAS'  # тг api hash
-            message(api_id, api_hash, get_recipient())
-
-
-        if __name__ == '__main__':  # точка старта программы
-            main()
+        else:  # Если кол-во анекдотов не равно 0
+            for i in range(amount):  # Запускаем цикл, при котором отправляем нужное кол-во анекдотов
+                with tg('AutoanecXD', api_id, api_hash) as client:  # Отправляем сообщение пользователю
+                    client.loop.run_until_complete(client.send_message(recipient, choice(jokes)))
+                print(i + 1, ' Анек отправлен XD')
 
 
-except KeyboardInterrupt:  # при нажатии ctrl + c
+    def main():
+        """Главная функция программы"""
+        jokes = parsing()  # Запускаем сбор анекдотов в список
+        api_id = 12345  # Telegram api id (Сюда нужно ввести свои значения)
+        api_hash = 'adsa986987897hgfg78798a7fa7898321'  # Telegram api hash (Сюда нужно ввести свои значения)
+        recipient = get_recipient()
+        message(api_id, api_hash, recipient, jokes)  # Запускаем отправку анекдотов адресату
+
+
+    if __name__ == '__main__':  # Точка старта программы
+        main()
+
+
+except KeyboardInterrupt:  # При нажатии ctrl + c
     print('\nОстановлено вами.')
 
-except ValueError:  # если ввести некорректные данные
+except ValueError:  # Если ввести некорректные данные
     print('\nОшибка отправки адресату.')
 
-except:  # Обрабатываем ошибки...
+except 0:  # Обрабатываем ошибки...
     print('\nПроизошла неизвестная ошибка.')  # Сообщение об ошибке
     print('\n=======ИНФОРМАЦИЯ ОБ ОШИБКЕ=========')  # Верхняя граница репорта об ошибке
-    traceback.print_exc(limit=2, file=sys.stdout)  # Подробный репорт об ошибке и ее причинах
+    print_exc(limit=2, file=stdout)  # Подробный репорт об ошибке и ее причинах
     print('========КОНЕЦ========')  # Конец репорта
