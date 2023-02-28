@@ -10,61 +10,116 @@ try:  # Обрабатываем сообщения об ошибке
     from random import choice
 
 
-    def parsing():
-        """Функция парсинга страницы сайта"""
-        jokes = []  # Объявляем список для сбора анекдотов со всех страниц
-        for i in range(1, 5):  # Берем информацию со всех страниц
-            page = get('https://anekdoty.ru/pro-hoholov/page/' + str(i) + '/')  # Собираем html-код со страницы
+    def choice_topic():
+        """Функция выбора темы анекдотов"""
+        print('1. Хохлы\n2. Программисты\n3. Гитлер\n4. Негры\n'
+              '5. Секс\n6. Черный юмор\n7. Про мать')
+        while True:
+            try:
+                topic = int(input('Выберите тему (цифра): '))
+                if topic == 1 or topic == 2 or topic == 3 or \
+                        topic == 4 or topic == 5 or topic == 6 or topic == 7:
+                    break
+                else:  # Если ввели значение больше (меньше), чем представлено
+                    print('Нет такого пункта меню. Попробуйте снова: ')
+
+            except ValueError:  # Исключение, если ввели не число
+                print('Вы ввели не число. Попробуйте снова: ')
+        return topic  # Возвращаем номер темы
+
+
+    def parsing(amount, url):
+        """Функция парсинга каждой страницы с анекдотами по выбранной теме"""
+        jokes = []  # В этом списке будем хранить анекдоты
+        for i in range(1, amount):  # Прогоняем все страницы
+            page = get(url + str(i) + '/')  # Собираем html-код со страницы
             page = bs(page.text, 'lxml')  # Делаем парсинг страницы при помощи lxml
             page = page.find_all('p')  # Находим на странице анекдоты (они помечены тегом <p>)
             jokes += [i.text for i in page]  # Собираем все анекдоты в один список
-        return jokes  # Возвращаем все анекдоты
+        return jokes  # Возвращаем список
+
+
+    def collection_of_jokes(topic):
+        """Функция, которая возвращает список анекдотов с заданной темой"""
+        if topic == 1:  # Выбор ссылки и кол-ва страниц для заданной темы
+            amount = 5
+            url = 'https://anekdoty.ru/pro-hoholov/page/'
+        elif topic == 2:
+            amount = 15
+            url = 'https://anekdoty.ru/pro-programmistov/page/'
+        elif topic == 3:
+            amount = 4
+            url = 'https://anekdoty.ru/pro-gitlera/page/'
+        elif topic == 4:
+            amount = 12
+            url = 'https://anekdoty.ru/pro-negrov/page/'
+        elif topic == 5:
+            amount = 22
+            url = 'https://anekdoty.ru/pro-seks/page/'
+        elif topic == 6:
+            amount = 7
+            url = 'https://anekdoty.ru/cherniy-yumor/page/'
+        else:
+            amount = 16
+            url = 'https://anekdoty.ru/pro-mamu/page/'
+        return parsing(amount, url)  # Возвращаем все анекдоты по выбранной теме
 
 
     def get_recipient():
         """Функция ввода имени пользователя получателя"""
-        recipient = ''
+        recipient = ''  # Здесь будем хранить имя получателя
         while recipient == '':  # Пока не исчезнет пустота...
-            recipient = input('Введите username (пример: @VovkaPutin228): ')  # Выводим...
+            recipient = input('Введите имя или номер получателя '
+                              '(пример: @VovkaPutin228): ')  # Выводим...
         return recipient  # Возвращаем имя получателя
 
 
     def amount_of_jokes():
         """Функция ввода кол-ва отправляемых анеков"""
-        print('Введите кол-во анеков, которых отправим (0 для отправки по нажатии Enter): ')
         while True:
             try:  # Проверка, вводит ли пользователь число
-                amount = int(input())
+                amount = int(input('Введите кол-во анекдотов, которых отправим '
+                                   '(0 для отправки по нажатии клавиши Enter): '))
                 break
-            except ValueError:
+
+            except ValueError:  # Исключение, если вводим не число
                 print('Вы ввели не число. Попробуйте снова: ')
         return amount  # Возвращаем кол-во анекдотов
 
 
     def message(api_id, api_hash, recipient, jokes):
         """Функция отправки сообщений"""
-        amount = amount_of_jokes()
+        amount = amount_of_jokes()  # Здесь храним кол-во анекдотов
         if amount == 0:  # Если ввели кол-во анекдотов равное 0
             # Данный блок работает, пока не завершим работу скрипта в целом
             while True:  # Бесконечный цикл...
-                input('Нажмите клавишу ввода для отправки анекдота.\n')  # Ждем нажатия клавиши...
+                input('Нажмите клавишу ввода для отправки анекдота.')  # Ждем нажатия клавиши...
                 with tg('AutoanecXD', api_id, api_hash) as client:  # Отправляем сообщение пользователю...
                     client.loop.run_until_complete(client.send_message(recipient, choice(jokes)))
-                print('Анек отправлен XD')
+                print('Анекдот отправлен XD')
 
         else:  # Если кол-во анекдотов не равно 0
             for i in range(amount):  # Запускаем цикл, при котором отправляем нужное кол-во анекдотов
                 with tg('AutoanecXD', api_id, api_hash) as client:  # Отправляем сообщение пользователю
                     client.loop.run_until_complete(client.send_message(recipient, choice(jokes)))
-                print(i + 1, ' Анек отправлен XD')
+                print(i + 1, ' Анекдот отправлен XD')
 
 
     def main():
         """Главная функция программы"""
-        jokes = parsing()  # Запускаем сбор анекдотов в список
-        api_id = 12345  # Telegram api id (Сюда нужно ввести свои значения)
-        api_hash = 'adsa986987897hgfg78798a7fa7898321'  # Telegram api hash (Сюда нужно ввести свои значения)
-        recipient = get_recipient()
+        #################################################
+        api_id = 0  # Telegram api id (Сюда нужно ввести свои значения)
+        api_hash = ''  # Telegram api hash (Сюда нужно ввести свои значения)
+        #################################################
+        if api_id == 0 or api_hash == '':
+            print('Вы не ввели api_id и (или) api_hash')
+            return 0
+
+        recipient = get_recipient()  # Выбор получателя
+        topic = choice_topic()  # Выбор темы анекдотов
+        print('Идёт поиск анекдотов по заданной теме. Пожалуйста, подождите...')
+        jokes = collection_of_jokes(topic)  # Запускаем сбор анекдотов в список
+        print('Все анекдоты найдены!')
         message(api_id, api_hash, recipient, jokes)  # Запускаем отправку анекдотов адресату
 
 
