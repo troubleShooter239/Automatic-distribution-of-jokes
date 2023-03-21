@@ -8,6 +8,7 @@ try:  # Обрабатываем сообщения об ошибке
     from traceback import print_exc
     from sys import stdout
     from random import choice
+    import lxml
 
 
     def choice_topic():
@@ -31,7 +32,7 @@ try:  # Обрабатываем сообщения об ошибке
     def parsing(amount, url):
         """Функция парсинга каждой страницы с анекдотами по выбранной теме"""
         jokes = []  # В этом списке будем хранить анекдоты
-        for i in range(1, amount):  # Прогоняем все страницы
+        for i in range(2, amount):  # Прогоняем все страницы
             page = get(url + str(i) + '/')  # Собираем html-код со страницы
             page = bs(page.text, 'lxml')  # Делаем парсинг страницы при помощи lxml
             page = page.find_all('p')  # Находим на странице анекдоты (они помечены тегом <p>)
@@ -40,29 +41,58 @@ try:  # Обрабатываем сообщения об ошибке
 
 
     def collection_of_jokes(topic):
-        """Функция, которая возвращает список анекдотов с заданной темой"""
-        if topic == 1:  # Выбор ссылки и кол-ва страниц для заданной темы
-            amount = 5
-            url = 'https://anekdoty.ru/pro-hoholov/page/'
-        elif topic == 2:
-            amount = 15
-            url = 'https://anekdoty.ru/pro-programmistov/page/'
-        elif topic == 3:
-            amount = 4
-            url = 'https://anekdoty.ru/pro-gitlera/page/'
-        elif topic == 4:
-            amount = 12
-            url = 'https://anekdoty.ru/pro-negrov/page/'
-        elif topic == 5:
-            amount = 22
-            url = 'https://anekdoty.ru/pro-seks/page/'
-        elif topic == 6:
-            amount = 7
-            url = 'https://anekdoty.ru/cherniy-yumor/page/'
-        else:
-            amount = 16
-            url = 'https://anekdoty.ru/pro-mamu/page/'
-        return parsing(amount, url)  # Возвращаем все анекдоты по выбранной теме
+        """Функция, возвращающая рандомный анекдот"""
+    num = randint(1, 16)
+    if num == 1:  # Выбор ссылки и кол-ва страниц для заданной темы
+        amount = 4
+        url = 'https://anekdoty.ru/pro-hoholov/page/'
+    elif num == 2:
+        amount = 12
+        url = 'https://anekdoty.ru/pro-programmistov/page/'
+    elif num == 3:
+        amount = 3
+        url = 'https://anekdoty.ru/pro-gitlera/page/'
+    elif num == 4:
+        amount = 11
+        url = 'https://anekdoty.ru/pro-negrov/page/'
+    elif num == 5:
+        amount = 22
+        url = 'https://anekdoty.ru/pro-seks/page/'
+    elif num == 6:
+        amount = 6
+        url = 'https://anekdoty.ru/cherniy-yumor/page/'
+    elif num == 7:
+        amount = 15
+        url = 'https://anekdoty.ru/pro-mamu/page/'
+    elif num == 8:
+        amount = 26
+        url = 'https://anekdoty.ru/detskie/page/'
+    elif num == 9:
+        amount = 7
+        url = 'https://anekdoty.ru/pro-armyan/page/'
+    elif num == 10:
+        amount = 19
+        url = 'https://anekdoty.ru/pro-gruzinov/page/'
+    elif num == 11:
+        amount = 3
+        url = 'https://anekdoty.ru/pro-klounov/page/'
+    elif num == 12:
+        amount = 20
+        url = 'https://anekdoty.ru/samye-smeshnye/page/'
+    elif num == 13:
+        amount = 28
+        url = 'https://anekdoty.ru/tupo-no-smeshno/page/'
+    elif num == 14:
+        amount = 14
+        url = 'https://anekdoty.ru/korotkie/page/'
+    elif num == 15:
+        amount = 2
+        url = 'https://anekdoty.ru/pro-invalidov/page/'
+    else:
+        amount = 5
+        url = 'https://anekdoty.ru/pro-mobilizaciyu/page/'
+        
+    return parsing(amount, url)  # Возвращаем все анекдоты по выбранной теме
 
 
     def get_recipient():
