@@ -10,7 +10,7 @@ python -m pip install -r requirements.txt
 ```
 
 ## Usage
-For start using script, you have to change variables (api_id, api_hash) in main function to yours.
+For start using script, you have to change variables in config.py (API_ID, API_HASH).
 
 ## Contributing
 
