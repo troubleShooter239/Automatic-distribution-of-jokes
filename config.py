@@ -1,5 +1,5 @@
-API_ID: int = 2353286  # Telegram api id (Enter your value)
-API_HASH: str = 'a37d3089e20a5cd6e6743b78d59b0b74'  # Telegram api hash (Enter your value)
+API_ID: int = 0  # Telegram api id (Enter your value)
+API_HASH: str = ''  # Telegram api hash (Enter your value)
 SESSION_NAME: str = 'Session'  # Current session name (Enter your value)
 TOPIC_INFO: dict = {
     '1': (12, 'https://anekdoty.ru/pro-programmistov/'),
