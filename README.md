@@ -4,7 +4,10 @@ Automatic distribution of jokes is a Python script, which makes scrabling of the
 
 ## Installation
 
-In the script folder use this cmd command: 
+1. Clone the repository.
+
+2. Install the dependencies:
+
 ```bash
 python -m pip install -r requirements.txt
 ```
